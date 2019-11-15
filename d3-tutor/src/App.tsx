@@ -1,12 +1,12 @@
 import React, {Component} from 'react'
 import Graph from './Graph'
+import D3Graph from "./D3Graph";
 import data from './data.json'
 import {GraphPropsType} from "./types";
 
 export default class App extends Component<any, GraphPropsType> {
     state = {
-        data: data,
-        width: 700,
+        width: 1000,
         height: 500,
         id: 'root'
     }
@@ -14,7 +14,7 @@ export default class App extends Component<any, GraphPropsType> {
     render() {
         return (
             <div className="App">
-                <Graph data={this.state.data} width={this.state.width} height={this.state.height}/>
+                <D3Graph/>
             </div>
         )
     }

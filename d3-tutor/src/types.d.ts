@@ -1,12 +1,12 @@
 export type GraphPropsType = {
-    data: Graph,
+    data?: Graph,
     width?: number,
     height?: number,
     id?: string
 }
 
 export type Node = {
-    id: number,
+    id?: number,
     label?: string,
     group?: number
 }
@@ -18,6 +18,6 @@ export type Link = {
 }
 
 export type Graph = {
-    nodes: Node[]
-    links: Link[]
+    nodes?: Node[]
+    links?: Link[]
 }

@@ -44,37 +44,28 @@ export default class Graph extends Component<any,any> {
             .enter()
                 .append('g')
 
-        console.log(this.state.graph)
-
         const circles = node.selectAll('circle')
             .data(this.state.graph.nodes)
             .enter()
-            .append('circle')
-            .attr('r', 5)
-            .attr('x', (d:any, i:any) => i*100)
-            .attr('y', 0)
-            .attr('fill', 'green')
-            .call(drag()
-                .on("start", dragstarted)
-                .on("drag", dragged)
-                .on("end", dragended))
+                .append('circle')
+                    .attr('r', 10)
+                    .attr('x', 0)
+                    .attr('y', 0)
+                    .attr('fill', 'green')
+                .call(drag()
+                    .on("start", dragstarted)
+                    .on("drag", dragged)
+                    .on("end", dragended))
+            .call((d:any) => console.log(d))
 
-        // const circles = selectAll('g')
-        //     .append('circle')
-        //     .attr('r', 5)
-        //     .attr('fill', 'green')
 
         simulation
             .nodes(this.state.graph.nodes)
             .on('tick', ticked)
 
-        // simulation
-        //     .force(link)
-        //     .links(this.state.graph.links) не работает
-
-        // simulation
-        //     //.force(link)
-        //     .links(this.state.graph.links)
+        simulation
+            .force('link')
+            .links(this.state.graph.links)
 
         function ticked() {
             link
@@ -83,7 +74,7 @@ export default class Graph extends Component<any,any> {
                 .attr('x2', (d:any) => d.target.x)
                 .attr('y2', (d:any) => d.target.y)
             node
-                .attr('transform', (d:any) => `translate(${d.x},${d.y})`)
+                .attr('transform', (d:any) => "translate(" + d.x + "," + d.y + ")")
         }
 
         function dragstarted(d:any) {
