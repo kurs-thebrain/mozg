@@ -1,0 +1,11 @@
+{
+  "name": "Start",
+  "children": [
+    {
+      "name": "First Child",
+      "children": [
+        {"name":  "End", "size":  3938}
+      ]
+    }
+  ]
+}
