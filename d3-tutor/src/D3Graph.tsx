@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {select, selectAll, event} from 'd3-selection'
+import {select, mouse, selectAll, event} from 'd3-selection'
 import {forceSimulation, forceLink, forceManyBody, forceCenter, forceX, forceY} from 'd3-force'
 import {drag} from 'd3-drag'
 import data from './data.json'
@@ -12,46 +12,113 @@ export default class D3Graph extends Component<any,any> {
     constructor(props:any) {
         super(props)
         this.state = {
+            //data
             graph: data,
-            isVisible: false,
             currentNode: {},
+
+            //window properties
             width: window.innerWidth,
-            height: window.innerHeight
+            height: window.innerHeight,
+
+            // Dock component's variable
+            isVisible: false,
+
+            //mouse behaviour variables
+            dragged: null,
+            selected_node: null,
+            selected_link: null,
+            mousedown_link: null,
+            mousedown_node: null,
+            mouseup_node: null,
         }
     }
 
-    draw() {
-        const graphLayout = forceSimulation(this.state.graph.nodes)
-            .force('link', forceLink(this.state.graph.links).id((d:any) => d.id))
-            .force('charge', forceManyBody())
+    updateGraph() { // разделить это на initializeGraph и updateGraph? (вынести то, что должно выполниться 1 раз в другой метод)
+        const graph = forceSimulation(this.state.graph.nodes)
+            .force('link', forceLink(this.state.graph.links).id((d:any) => d.id).distance(75))
+            .force('charge', forceManyBody().strength(-200))
             .force('center', forceCenter(this.state.width/2, this.state.height/2))
             //.force('x', forceX(this.state.height/2).strength(0.1)) // вертикальное расположение
-
             .on('tick', ticked)
 
-        const colorScale = scaleOrdinal(schemeCategory10)
+        const colorScale = scaleOrdinal(schemeCategory10) // работает не так, как нужно
 
-        const svg = select('svg')
+        const mousedown = () => {
+            this.setState({dragged: true})
+            if (this.state.currentNode.id && this.state.dragged)
+                drag_line
+                    .attr("class", "drag_line")
+                    // .attr("x1", this.state.currentNode.x)
+                    // .attr("y1", this.state.currentNode.y)
+                    // .attr("x2", this.state.currentNode.x)
+                    // .attr("y2", this.state.currentNode.y);
+        }
 
-        const container = svg.append('g')
+        const mousemove = () => {
+            if (this.state.dragged)
+                drag_line
+                    .attr("x1", this.state.currentNode.x)
+                    .attr("y1", this.state.currentNode.y)
+                    .attr("x2", mouse(svg.node())[0])
+                    .attr("y2", mouse(svg.node())[1]);
+        }
 
-        const link = container.attr('class', 'links')
+        const mouseup = () => {
+            if (this.state.dragged) {
+                this.setState({dragged: false})
+                drag_line
+                    .attr("class", "hidden_line")
+                    .attr("x1", 0)
+                    .attr("y1", 0)
+                    .attr("x2", 0)
+                    .attr("y2", 0)
+            }
+        }
+
+        const svg = selectAll('svg')
+            .on("mousemove", mousemove)
+            .on("mousedown", mousedown)
+            .on("mouseup", mouseup)
+
+        const container = selectAll('g')
+
+        const drag_line = container.append("line") // линия, которая отображается при создании новых узлов
+            .attr("class", "hidden_line") // добавить в css кастомный класс
+            .attr("x1", 0)
+            .attr("y1", 0)
+            .attr("x2", 0)
+            .attr("y2", 0)
+
+
+
+        const link = container
+            .append('g')
+            .attr('class', 'links') // связи
             .selectAll('line')
             .data(this.state.graph.links)
             .enter()
             .append('line')
-            .attr('stroke', '#aaa')
-            .attr('stroke-width', '1px')
+            .attr('class', 'link')
 
-        const node = container.attr('class', 'nodes')
+
+        const node = container
+            .append('g')
+            .attr('class', 'nodes') // узлы
             .selectAll('circle')
             .data(this.state.graph.nodes)
             .enter()
             .append('circle')
-            .attr('r', 5)
+            .attr('class', 'node')
+            .attr('r', 15)
             .attr('fill', (d:any) => colorScale(d))
+            .on('mousedown', (d:any) => {
+                this.setState({currentNode: d})
+            })
+            .on('click', (d:any) => {
+                this.setState({currentNode: d, isVisible: true})
+            })
 
-        const labels = node.attr('class', 'labels')
+        const labels = node
             .append('text')
             .text((d:any) => d.label)
             .attr('x', (d:any) => d.x)
@@ -59,17 +126,6 @@ export default class D3Graph extends Component<any,any> {
 
         node.append('title')
             .text((d:any) => d.label)
-
-        node.on('click',  (d:any) => {
-            this.setState({currentNode: d, isVisible: true})
-        })
-
-        node.call(
-            drag()
-                .on('start', dragstarted)
-                .on('drag', dragged)
-                .on('end', dragended)
-        )
 
         function ticked() {
             node.call(updateNode)
@@ -91,41 +147,39 @@ export default class D3Graph extends Component<any,any> {
             if (isFinite(x)) return x
             return 0
         }
-
-        function dragstarted(d:any) {
-            if (!event.active) graphLayout.alphaTarget(0.3).restart();
-            d.fx = d.x;
-            d.fy = d.y;
-        }
-
-        function dragged(d: any) {
-            d.fx = event.x;
-            d.fy = event.y;
-        }
-
-        function dragended(d:any) {
-            if (!event.active) graphLayout.alphaTarget(0);
-            d.fx = null;
-            d.fy = null;
-        }
     }
 
-    componentDidMount(): void {
-        this.draw()
+
+    handleWindowSize = () => {
+        let updatedW = window.innerWidth,
+            updatedH = window.innerHeight
+        this.setState({width:updatedW, height:updatedH})
+
+    }
+
+    componentDidMount() {
+        window.addEventListener('resize',this.handleWindowSize)
+        this.updateGraph()
+    }
+
+    componentWillUnmount(){
+        window.removeEventListener('resize', this.handleWindowSize)
     }
 
     render() {
-
         const toDraw = (this.state.currentNode.contentType === 'url') ? <iframe className='externalSite' src={this.state.currentNode.content} frameBorder="0"></iframe>
-            : (this.state.currentNode.contentType === 'html') ? <div>{this.state.currentNode.content}</div> : 'wtf'
+            : (this.state.currentNode.contentType === 'html') ? <p dangerouslySetInnerHTML={{__html: this.state.currentNode.content}}/> : 'empty'
 
         return (
-        <div>
-            <Dock position='left' isVisible={this.state.isVisible} dimMode='opaque'>
-                {toDraw}
-            </Dock>
-            <svg width={this.state.width} height={this.state.height} style={{border:'solid 1px #eee', borderBottom:'solid 1ox #ccc'}}/>
-        </div> )
+            <div>
+                <Dock position='left' isVisible={this.state.isVisible} dimMode='opaque'>
+                    <button onClick={()=> {this.setState({isVisible: false})}}>Exit</button>
+                    {toDraw}
+                </Dock>
+                <svg width={this.state.width} height={this.state.height} style={{border:'solid 1px #eee', borderBottom:'solid 1ox #ccc'}}>
+                    <g className='graph'/>
+                </svg>
+            </div> )
 
     }
 }

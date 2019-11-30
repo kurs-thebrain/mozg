@@ -1,5 +1,5 @@
 .externalSite {
-    position:absolute;
+    position:relative;
     top:0;
     left:0;
     width:100%;
@@ -9,4 +9,14 @@
 text {
     font-family: sans-serif;
     font-size: 10px;
+}
+
+.link {
+    stroke: #aaa;
+    stroke-width: 2px;
+}
+
+.drag_line {
+    stroke: #7498e3;
+    stroke-width: 5px;
 }
