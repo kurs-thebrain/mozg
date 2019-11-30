@@ -25,10 +25,8 @@ export default class D3Graph extends Component<any,any> {
 
             //mouse behaviour variables
             dragged: null,
-            selected_node: null,
-            selected_link: null,
-            mousedown_link: null,
-            mousedown_node: null,
+            mousedownLink: null,
+            mousedownNode: null,
             mouseup_node: null,
         }
     }
@@ -45,7 +43,7 @@ export default class D3Graph extends Component<any,any> {
 
         const mousedown = () => {
             this.setState({dragged: true})
-            if (this.state.currentNode && this.state.dragged)
+            if (this.state.mousedownNode && this.state.dragged)
                 drag_line
                     .attr("class", "drag_line")
                     .attr("x1", this.state.currentNode.x)
@@ -63,7 +61,7 @@ export default class D3Graph extends Component<any,any> {
 
         const mouseup = () => {
             if (this.state.dragged) {
-                this.setState({dragged: false})
+                this.setState({dragged: false, mousedownNode: null})
                 drag_line
                     .attr("class", "hidden_line")
                     .attr("x1", 0)
@@ -110,7 +108,7 @@ export default class D3Graph extends Component<any,any> {
             .attr('r', 15)
             .attr('fill', (d:any) => colorScale(d))
             .on('mousedown', (d:any) => {
-                this.setState({currentNode: d})
+                this.setState({currentNode: d, mousedownNode: d})
             })
             .on('click', (d:any) => {
                 this.setState({currentNode: d, isVisible: true})
