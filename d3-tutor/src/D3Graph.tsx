@@ -45,20 +45,18 @@ export default class D3Graph extends Component<any,any> {
 
         const mousedown = () => {
             this.setState({dragged: true})
-            if (this.state.currentNode.id && this.state.dragged)
+            if (this.state.currentNode && this.state.dragged)
                 drag_line
                     .attr("class", "drag_line")
-                    // .attr("x1", this.state.currentNode.x)
-                    // .attr("y1", this.state.currentNode.y)
-                    // .attr("x2", this.state.currentNode.x)
-                    // .attr("y2", this.state.currentNode.y);
+                    .attr("x1", this.state.currentNode.x)
+                    .attr("y1", this.state.currentNode.y)
+                    .attr("x2", this.state.currentNode.x)
+                    .attr("y2", this.state.currentNode.y);
         }
 
         const mousemove = () => {
             if (this.state.dragged)
                 drag_line
-                    .attr("x1", this.state.currentNode.x)
-                    .attr("y1", this.state.currentNode.y)
                     .attr("x2", mouse(svg.node())[0])
                     .attr("y2", mouse(svg.node())[1]);
         }
