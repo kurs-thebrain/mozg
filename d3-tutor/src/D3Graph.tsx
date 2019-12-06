@@ -36,6 +36,42 @@ export default class D3Graph extends Component<any,any> {
     link = selectAll;
     colorScale = scaleOrdinal(schemeCategory10)
 
+    // пихни это куда-нибудь туда ниже
+    // const mousedown = () => {
+    //     this.setState({dragged: true})
+    //     if (this.state.mousedownNode && this.state.dragged)
+    //         drag_line
+    //             .attr("class", "drag_line")
+    //             .attr("x1", this.state.currentNode.x)
+    //             .attr("y1", this.state.currentNode.y)
+    //             .attr("x2", this.state.currentNode.x)
+    //             .attr("y2", this.state.currentNode.y);
+    // }
+    //
+    // const mousemove = () => {
+    //     if (this.state.dragged)
+    //         drag_line
+    //             .attr("x2", mouse(svg.node())[0])
+    //             .attr("y2", mouse(svg.node())[1]);
+    // }
+    //
+    // const mouseup = () => {
+    //     if (this.state.dragged) {
+    //         this.setState({dragged: false, mousedownNode: null})
+    //         drag_line
+    //             .attr("class", "hidden_line")
+    //             .attr("x1", 0)
+    //             .attr("y1", 0)
+    //             .attr("x2", 0)
+    //             .attr("y2", 0)
+    //     }
+    // }
+
+    // const svg = selectAll('svg')
+    //     .on("mousemove", mousemove)
+    //     .on("mousedown", mousedown)
+    //     .on("mouseup", mouseup)
+
     initializeGraph() {
         this.graph = forceSimulation(this.state.graph.nodes)
             .force('link', forceLink(this.state.graph.links).id((d:any) => d.id).distance(75))
@@ -94,7 +130,7 @@ export default class D3Graph extends Component<any,any> {
     }
 
     updateGraph() { // разделить это на initializeGraph и updateGraph? (вынести то, что должно выполниться 1 раз в другой метод)
-        //this.graph.on('tick', ticked)
+        //а это почисть давай резче
 
         const colorScale = scaleOrdinal(schemeCategory10) // работает не так, как нужно
 
