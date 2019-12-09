@@ -7,6 +7,8 @@ import {schemeCategory10} from "d3-scale-chromatic"
 
 import Dock from 'react-dock'
 
+// связи между "братьями" сделать пунктирными
+
 export default class D3Graph extends Component<any,any> {
     constructor(props:any) {
         super(props)
@@ -31,46 +33,43 @@ export default class D3Graph extends Component<any,any> {
     }
 
     graph = forceSimulation();
+    svg = selectAll;
     container = selectAll;
     node = selectAll;
     link = selectAll;
+    drag_line = selectAll;
     colorScale = scaleOrdinal(schemeCategory10)
 
     // пихни это куда-нибудь туда ниже
-    // const mousedown = () => {
-    //     this.setState({dragged: true})
-    //     if (this.state.mousedownNode && this.state.dragged)
-    //         drag_line
-    //             .attr("class", "drag_line")
-    //             .attr("x1", this.state.currentNode.x)
-    //             .attr("y1", this.state.currentNode.y)
-    //             .attr("x2", this.state.currentNode.x)
-    //             .attr("y2", this.state.currentNode.y);
-    // }
-    //
-    // const mousemove = () => {
-    //     if (this.state.dragged)
-    //         drag_line
-    //             .attr("x2", mouse(svg.node())[0])
-    //             .attr("y2", mouse(svg.node())[1]);
-    // }
-    //
-    // const mouseup = () => {
-    //     if (this.state.dragged) {
-    //         this.setState({dragged: false, mousedownNode: null})
-    //         drag_line
-    //             .attr("class", "hidden_line")
-    //             .attr("x1", 0)
-    //             .attr("y1", 0)
-    //             .attr("x2", 0)
-    //             .attr("y2", 0)
-    //     }
-    // }
+    mousedown = () => {
+        this.setState({dragged: true})
+        if (this.state.mousedownNode && this.state.dragged)
+            this.drag_line
+                .attr("class", "drag_line")
+                .attr("x1", this.state.currentNode.x)
+                .attr("y1", this.state.currentNode.y)
+                .attr("x2", this.state.currentNode.x)
+                .attr("y2", this.state.currentNode.y);
+    }
 
-    // const svg = selectAll('svg')
-    //     .on("mousemove", mousemove)
-    //     .on("mousedown", mousedown)
-    //     .on("mouseup", mouseup)
+    mousemove = () => {
+        if (this.state.dragged)
+            this.drag_line
+                .attr("x2", mouse(this.svg.node())[0])
+                .attr("y2", mouse(this.svg.node())[1]);
+    }
+
+    mouseup = () => {
+        if (this.state.dragged) {
+            this.setState({dragged: false, mousedownNode: null})
+            this.drag_line
+                .attr("class", "hidden_line")
+                .attr("x1", 0)
+                .attr("y1", 0)
+                .attr("x2", 0)
+                .attr("y2", 0)
+        }
+    }
 
     initializeGraph() {
         this.graph = forceSimulation(this.state.graph.nodes)
@@ -81,6 +80,13 @@ export default class D3Graph extends Component<any,any> {
 
         this.container = selectAll('g')
 
+        this.drag_line = this.container.append("line") // линия, которая отображается при создании новых узлов
+            .attr("class", "hidden_line") // добавить в css кастомный класс
+            .attr("x1", 0)
+            .attr("y1", 0)
+            .attr("x2", 0)
+            .attr("y2", 0)
+
         this.link = this.container.append('g')
             .attr('class', 'links') // связи
             .selectAll('line')
@@ -88,7 +94,6 @@ export default class D3Graph extends Component<any,any> {
             .enter()
             .append('line')
             .attr('class', 'link')
-
 
         this.node = this.container
             .append('g')
@@ -106,6 +111,11 @@ export default class D3Graph extends Component<any,any> {
             .on('click', (d:any) => {
                 this.setState({currentNode: d, isVisible: true})
             })
+
+        this.svg = selectAll('svg')
+            .on("mousemove", this.mousemove)
+            .on("mousedown", this.mousedown)
+            .on("mouseup", this.mouseup)
     }
 
     ticked = () => {
@@ -129,113 +139,37 @@ export default class D3Graph extends Component<any,any> {
         return 0
     }
 
-    updateGraph() { // разделить это на initializeGraph и updateGraph? (вынести то, что должно выполниться 1 раз в другой метод)
-        //а это почисть давай резче
+    updateGraph() {
+       // const colorScale = scaleOrdinal(schemeCategory10) // работает не так, как нужно
 
-        const colorScale = scaleOrdinal(schemeCategory10) // работает не так, как нужно
+        // this.link = this.link.data(this.state.graph.links)
 
-        // const mousedown = () => {
-        //     this.setState({dragged: true})
-        //     if (this.state.mousedownNode && this.state.dragged)
-        //         drag_line
-        //             .attr("class", "drag_line")
-        //             .attr("x1", this.state.currentNode.x)
-        //             .attr("y1", this.state.currentNode.y)
-        //             .attr("x2", this.state.currentNode.x)
-        //             .attr("y2", this.state.currentNode.y);
-        // }
+        // this.link.enter()
+        //     .insert("line", ".node")
+        //     .attr("class", "link") // узнать
         //
-        // const mousemove = () => {
-        //     if (this.state.dragged)
-        //         drag_line
-        //             .attr("x2", mouse(svg.node())[0])
-        //             .attr("y2", mouse(svg.node())[1]);
-        // }
-        //
-        // const mouseup = () => {
-        //     if (this.state.dragged) {
-        //         this.setState({dragged: false, mousedownNode: null})
-        //         drag_line
-        //             .attr("class", "hidden_line")
-        //             .attr("x1", 0)
-        //             .attr("y1", 0)
-        //             .attr("x2", 0)
-        //             .attr("y2", 0)
-        //     }
-        // }
+        // this.link.exit()
+        //     .remove();
+        // this.link
+        //     .classed("link_selected", (d:any) => {return d === this.state.selected_link});
 
-        // const svg = selectAll('svg')
-        //     .on("mousemove", mousemove)
-        //     .on("mousedown", mousedown)
-        //     .on("mouseup", mouseup)
+        //console.log(this.node.data(this.state.graph.nodes))
 
-        // const container = selectAll('g')
-        //
-        // const drag_line = container.append("line") // линия, которая отображается при создании новых узлов
-        //     .attr("class", "hidden_line") // добавить в css кастомный класс
-        //     .attr("x1", 0)
-        //     .attr("y1", 0)
-        //     .attr("x2", 0)
-        //     .attr("y2", 0)
-        //
-        //
-        //
-        // const link = container
-        //     .append('g')
-        //     .attr('class', 'links') // связи
-        //     .selectAll('line')
-        //     .data(this.state.graph.links)
-        //     .enter()
-        //     .append('line')
-        //     .attr('class', 'link')
-        //
-        //
-        // const node = container
-        //     .append('g')
-        //     .attr('class', 'nodes') // узлы
-        //     .selectAll('circle')
-        //     .data(this.state.graph.nodes)
-        //     .enter()
-        //     .append('circle')
-        //     .attr('class', 'node')
-        //     .attr('r', 15)
-        //     .attr('fill', (d:any) => colorScale(d))
-        //     .on('mousedown', (d:any) => {
-        //         this.setState({currentNode: d, mousedownNode: d})
-        //     })
-        //     .on('click', (d:any) => {
-        //         this.setState({currentNode: d, isVisible: true})
-        //     })
-        //
-        // const labels = node
-        //     .append('text')
-        //     .text((d:any) => d.label)
-        //     .attr('x', (d:any) => d.x)
-        //     .attr('y', (d:any) => d.y)
-        //
-        // node.append('title')
-        //     .text((d:any) => d.label)
-        //
-        // function ticked() {
-        //     node.call(updateNode)
-        //     link.call(updateLink)
-        // }
-        //
-        // function updateNode(node:any) {
-        //     node.attr('transform', (d:any) => `translate(${fixna(d.x)},${fixna(d.y)})`)
-        // }
-        //
-        // function updateLink(link:any) {
-        //     link.attr('x1', (d:any) => fixna(d.source.x))
-        //     link.attr('y1', (d:any) => fixna(d.source.y))
-        //     link.attr('x2', (d:any) => fixna(d.target.x))
-        //     link.attr('y2', (d:any) => fixna(d.target.y))
-        // }
-        //
-        // function fixna(x:any) {
-        //     if (isFinite(x)) return x
-        //     return 0
-        // }
+        this.node = selectAll('circle')
+            .data(this.state.graph.nodes)
+            .enter()
+                .append('circle')
+                .attr('class', 'node')
+                .attr('r', 15)
+            .exit()
+                .append('circle')
+                .attr('class', 'node')
+                .attr('r', 15)
+                .attr('fill','green')
+        // this.node
+        //     .classed("node_selected", (d:any) => {return d === this.state.selected_node})
+
+        console.log(this.node)
     }
 
     addNode = (content:string) => {
@@ -248,7 +182,7 @@ export default class D3Graph extends Component<any,any> {
             'links': this.state.graph.links
         }
         this.setState({graph: newGraph})
-
+        this.updateGraph();
     }
 
     handleWindowSize = () => {
@@ -261,7 +195,7 @@ export default class D3Graph extends Component<any,any> {
     componentDidMount() {
         window.addEventListener('resize',this.handleWindowSize)
         this.initializeGraph()
-        this.updateGraph()
+       // this.updateGraph()
     }
 
     componentWillUnmount(){
@@ -286,3 +220,108 @@ export default class D3Graph extends Component<any,any> {
 
     }
 }
+
+
+
+// const mousedown = () => {
+//     this.setState({dragged: true})
+//     if (this.state.mousedownNode && this.state.dragged)
+//         drag_line
+//             .attr("class", "drag_line")
+//             .attr("x1", this.state.currentNode.x)
+//             .attr("y1", this.state.currentNode.y)
+//             .attr("x2", this.state.currentNode.x)
+//             .attr("y2", this.state.currentNode.y);
+// }
+//
+// const mousemove = () => {
+//     if (this.state.dragged)
+//         drag_line
+//             .attr("x2", mouse(svg.node())[0])
+//             .attr("y2", mouse(svg.node())[1]);
+// }
+//
+// const mouseup = () => {
+//     if (this.state.dragged) {
+//         this.setState({dragged: false, mousedownNode: null})
+//         drag_line
+//             .attr("class", "hidden_line")
+//             .attr("x1", 0)
+//             .attr("y1", 0)
+//             .attr("x2", 0)
+//             .attr("y2", 0)
+//     }
+// }
+
+// const svg = selectAll('svg')
+//     .on("mousemove", mousemove)
+//     .on("mousedown", mousedown)
+//     .on("mouseup", mouseup)
+
+// const container = selectAll('g')
+//
+// const drag_line = container.append("line") // линия, которая отображается при создании новых узлов
+//     .attr("class", "hidden_line") // добавить в css кастомный класс
+//     .attr("x1", 0)
+//     .attr("y1", 0)
+//     .attr("x2", 0)
+//     .attr("y2", 0)
+//
+//
+//
+// const link = container
+//     .append('g')
+//     .attr('class', 'links') // связи
+//     .selectAll('line')
+//     .data(this.state.graph.links)
+//     .enter()
+//     .append('line')
+//     .attr('class', 'link')
+//
+//
+// const node = container
+//     .append('g')
+//     .attr('class', 'nodes') // узлы
+//     .selectAll('circle')
+//     .data(this.state.graph.nodes)
+//     .enter()
+//     .append('circle')
+//     .attr('class', 'node')
+//     .attr('r', 15)
+//     .attr('fill', (d:any) => colorScale(d))
+//     .on('mousedown', (d:any) => {
+//         this.setState({currentNode: d, mousedownNode: d})
+//     })
+//     .on('click', (d:any) => {
+//         this.setState({currentNode: d, isVisible: true})
+//     })
+//
+// const labels = node
+//     .append('text')
+//     .text((d:any) => d.label)
+//     .attr('x', (d:any) => d.x)
+//     .attr('y', (d:any) => d.y)
+//
+// node.append('title')
+//     .text((d:any) => d.label)
+//
+// function ticked() {
+//     node.call(updateNode)
+//     link.call(updateLink)
+// }
+//
+// function updateNode(node:any) {
+//     node.attr('transform', (d:any) => `translate(${fixna(d.x)},${fixna(d.y)})`)
+// }
+//
+// function updateLink(link:any) {
+//     link.attr('x1', (d:any) => fixna(d.source.x))
+//     link.attr('y1', (d:any) => fixna(d.source.y))
+//     link.attr('x2', (d:any) => fixna(d.target.x))
+//     link.attr('y2', (d:any) => fixna(d.target.y))
+// }
+//
+// function fixna(x:any) {
+//     if (isFinite(x)) return x
+//     return 0
+// }
