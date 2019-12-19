@@ -5,33 +5,26 @@
       "content": "https://ru.wikipedia.org/wiki/Заглавная_страница",
       "contentType": "url"
     },
-    {"id": "2", "label": "Brain FAQ",
-      "group": 1
-    },
-    {"id": "3", "label": "Dev team",
+     {"id": "2", "label": "Dev team",
       "group": 2
     },
-    {"id": "4", "label": "Ruslan Khazbulatov",
+    {"id": "3", "label": "Ruslan Khazbulatov",
       "group": 2,
       "content": "<a href='https://vk.com/almostz'>vk</a>",
       "contentType": "html"
     },
-    {"id": "5", "label": "Alexandra Rudenko",
+    {"id": "4", "label": "Alexandra Rudenko",
       "group": 2},
-    {"id": "6", "label": "Roman Armansky",
+    {"id": "5", "label": "Roman Armansky",
       "group": 2},
-    {"id": "7", "label": "Arman Davletov",
-      "group": 2},
-    {"id": "8", "label": "Creating a node",
-      "group": 1}
+    {"id": "6", "label": "Arman Davletov",
+      "group": 2}
   ],
   "links":[
     {"source":"1", "target":"2"},
-    {"source":"1", "target":"3"},
-    {"source":"3", "target":"4"},
-    {"source":"3", "target":"5"},
-    {"source":"3", "target":"6"},
-    {"source":"3", "target":"7"},
-    {"source":"2", "target":"8"}
+    {"source":"2", "target":"3"},
+    {"source":"2", "target":"4"},
+    {"source":"2", "target":"5"},
+    {"source":"2", "target":"6"}
   ]
 }
