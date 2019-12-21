@@ -6,6 +6,7 @@ import {scaleOrdinal} from "d3-scale";
 import {schemeCategory10} from "d3-scale-chromatic"
 
 import Dock from 'react-dock'
+import MarkdownEditor from "./md_editor";
 
 // связи между "братьями" сделать пунктирными
 
@@ -79,7 +80,7 @@ export default class D3Graph extends Component<any,any> {
             let newLink = {source: this.state.mousedownNode, target: this.state.mouseup_node};
             this.container
                 .selectAll('.links')
-                .append('line')
+                .append('path')
                 .attr('class', 'link')
 
             this.state.graph.links.push(newLink)
@@ -93,7 +94,7 @@ export default class D3Graph extends Component<any,any> {
 
             this.container
                 .selectAll('.links')
-                .append('line')
+                .append('path')
                 .attr('class', 'link')
 
             this.state.graph.links.push(newLink)
@@ -133,7 +134,7 @@ export default class D3Graph extends Component<any,any> {
             .selectAll('line')
             .data(this.state.graph.links)
             .enter()
-            .append('line')
+            .append('path')
             .attr('class', 'link')
 
         this.node = this.container
@@ -173,10 +174,17 @@ export default class D3Graph extends Component<any,any> {
     }
 
     updateLink = (link:any) => {
-        link.attr('x1', (d:any) => this.fixna(d.source.x))
-        link.attr('y1', (d:any) => this.fixna(d.source.y))
-        link.attr('x2', (d:any) => this.fixna(d.target.x))
-        link.attr('y2', (d:any) => this.fixna(d.target.y))
+        // link.attr('x1', (d:any) => this.fixna(d.source.x))
+        // link.attr('y1', (d:any) => this.fixna(d.source.y))
+        // link.attr('x2', (d:any) => this.fixna(d.target.x))
+        // link.attr('y2', (d:any) => this.fixna(d.target.y))
+
+        link.attr('d', function(d:any){
+            var dx = d.target.x - d.source.x,
+                dy = d.target.y - d.source.y,
+                dr = Math.sqrt(dx * dx + dy * dy);
+            return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+        })
     }
 
     fixna = (x:any) => {
@@ -200,7 +208,9 @@ export default class D3Graph extends Component<any,any> {
             'nodes': [...this.state.graph.nodes,
                 {   id: this.state.graph.nodes.length + 1,
                     contentType: 'markdown',
-                    content: content
+                    content: content,
+                    x: x,
+                    y: y
                 }],
             'links': this.state.graph.links
         }
@@ -242,14 +252,18 @@ export default class D3Graph extends Component<any,any> {
     }
 
     render() {
-        const toDraw = (this.state.currentNode.contentType === 'url') ? <iframe className='externalSite' src={this.state.currentNode.content} frameBorder="0"></iframe>
-            : (this.state.currentNode.contentType === 'html') ? <p dangerouslySetInnerHTML={{__html: this.state.currentNode.content}}/> : (this.state.currentNode.content === 'markdown') ? <p> {this.state.content} </p> : 'empty'
+        const toDraw = (this.state.currentNode.contentType === 'url') ?
+            <iframe className='externalSite' src={this.state.currentNode.content} frameBorder="0"></iframe>
+            : (this.state.currentNode.contentType === 'html') ?
+                <p dangerouslySetInnerHTML={{__html: this.state.currentNode.content}}/>
+                : (this.state.currentNode.content === 'markdown') ? <p> {this.state.content} </p> : 'empty'
 
         return (
             <div>
                 <Dock position='left' isVisible={this.state.isVisible} dimMode='transparent'>
-                    <button onClick={() => {this.setState({isVisible: false})}}>Exit</button>
+                    <div onClick={() => {this.setState({isVisible: false})}}>X</div>
                     {toDraw}
+                    <MarkdownEditor/>
                 </Dock>
                 <svg width={this.state.width} height={this.state.height} style={{border:'solid 1px #eee', borderBottom:'solid 1ox #ccc'}}>
                     <g className='graph'/>

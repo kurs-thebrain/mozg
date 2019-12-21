@@ -12,7 +12,8 @@ text {
 }
 
 .link {
-    stroke: #aaa;
+    fill: none;
+    stroke: black;
     stroke-width: 2px;
 }
 
