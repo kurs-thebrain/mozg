@@ -73,21 +73,21 @@ export default class MarkdownEditor extends Component {
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve(this.mdParser.render(text))
-            }, 1000)
+            })
         })
     }
     render() {
         return(
-            <div style={{height:'400px'}}>
+            <div style={{height:'700px', width: '500px'}}>
                 <MdEditor
                     value={'It test mdEditor'}
                     ref={node => this.mdEditor=node}
                     renderHTML={this.renderHTML}
-                    style={{height:'300px'}}
+                    style={{height:'700px'}}
                     config={{
                         view: {
-                            menu:true,
-                            md:true,
+                            menu:false,
+                            md:false,
                             html:true,
                             fullScreen:true
                         }
