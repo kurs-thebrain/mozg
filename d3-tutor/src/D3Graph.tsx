@@ -5,8 +5,8 @@ import data from './data.json'
 import {scaleOrdinal} from "d3-scale";
 import {schemeCategory10} from "d3-scale-chromatic"
 
-import Dock from 'react-dock'
-import MarkdownEditor from "./md_editor";
+import SwipeableDrawer from '@material-ui/core/SwipeableDrawer'
+import MarkdownEditor from './md_editor'
 
 // связи между "братьями" сделать пунктирными
 
@@ -260,11 +260,13 @@ export default class D3Graph extends Component<any,any> {
 
         return (
             <div>
-                <Dock position='left' isVisible={this.state.isVisible} dimMode='transparent'>
-                    <div onClick={() => {this.setState({isVisible: false})}}>X</div>
+                <SwipeableDrawer
+                    onClose={(d:any) => {this.setState({isVisible:false})}}
+                    onOpen={(d:any) => {this.setState({isVisible:true})}}
+                    open={this.state.isVisible} >
                     {toDraw}
                     <MarkdownEditor/>
-                </Dock>
+                </SwipeableDrawer>
                 <svg width={this.state.width} height={this.state.height} style={{border:'solid 1px #eee', borderBottom:'solid 1ox #ccc'}}>
                     <g className='graph'/>
                 </svg>
