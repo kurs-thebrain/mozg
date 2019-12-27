@@ -8,6 +8,7 @@ import {schemeCategory10} from "d3-scale-chromatic"
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer'
 import MarkdownEditor from './md_editor'
 
+import ButtonAppBar from "./NavPanel";
 // связи между "братьями" сделать пунктирными
 
 export default class D3Graph extends Component<any,any> {
@@ -260,6 +261,7 @@ export default class D3Graph extends Component<any,any> {
 
         return (
             <div>
+                <ButtonAppBar/>
                 <SwipeableDrawer
                     onClose={(d:any) => {this.setState({isVisible:false})}}
                     onOpen={(d:any) => {this.setState({isVisible:true})}}
