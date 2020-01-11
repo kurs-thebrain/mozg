@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, {Component, useState} from 'react'
 import {mouse, selectAll} from 'd3-selection'
 import {forceCenter, forceLink, forceManyBody, forceSimulation, forceLayout} from 'd3-force'
 import data from './data.json'
@@ -6,7 +6,11 @@ import {scaleOrdinal} from "d3-scale";
 import {schemeCategory10} from "d3-scale-chromatic"
 
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer'
-import MarkdownEditor from './md_editor'
+//import MarkdownEditor from './md_editor'
+
+import EditorPreview from './EditorPreview'
+
+// РАЗДЕЛИТЬ НА НЕСКОЛЬКО ФАЙЛОВ УЖЕ НЕ СМЕШНО
 
 import ButtonAppBar from "./NavPanel";
 // связи между "братьями" сделать пунктирными
@@ -150,6 +154,7 @@ export default class D3Graph extends Component<any,any> {
             .attr('fill', (d:any) => this.colorScale(d))
             .on('mousedown', (d:any) => {
                 this.setState({currentNode: d, mousedownNode: d})
+                this.setState({markdown: d.content})
             })
             .on('mouseup', (d:any)=>
             {
@@ -253,26 +258,20 @@ export default class D3Graph extends Component<any,any> {
     }
 
     render() {
-        const toDraw = (this.state.currentNode.contentType === 'url') ?
-            <iframe className='externalSite' src={this.state.currentNode.content} frameBorder="0"></iframe>
-            : (this.state.currentNode.contentType === 'html') ?
-                <p dangerouslySetInnerHTML={{__html: this.state.currentNode.content}}/>
-                : (this.state.currentNode.content === 'markdown') ? <p> {this.state.content} </p> : 'empty'
-
         return (
             <div>
                 <ButtonAppBar/>
                 <SwipeableDrawer
                     onClose={(d:any) => {this.setState({isVisible:false})}}
                     onOpen={(d:any) => {this.setState({isVisible:true})}}
-                    open={this.state.isVisible} >
-                    {toDraw}
-                    <MarkdownEditor/>
+                    open={this.state.isVisible}
+                    max-width='500'
+                    >
+                    <EditorPreview markdown = {this.state.currentNode.content}/>
                 </SwipeableDrawer>
                 <svg width={this.state.width} height={this.state.height} style={{border:'solid 1px #eee', borderBottom:'solid 1ox #ccc'}}>
                     <g className='graph'/>
                 </svg>
-                <button onClick={() => {this.addNode('new', mouse(this)[0], mouse(this)[1])}}>New node</button>
             </div> )
 
     }

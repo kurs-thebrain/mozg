@@ -21,3 +21,17 @@ text {
     stroke: #7498e3;
     stroke-width: 5px;
 }
+
+#editor {
+    width: 80%;
+    height: 50vh;
+    border-radius: 5px;
+    outline: none;
+    resize: none;
+    margin: auto;
+    display: flex
+}
+
+.MuiPaper-root {
+    width: 40%
+}

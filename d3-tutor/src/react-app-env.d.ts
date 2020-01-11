@@ -8,4 +8,6 @@ declare module 'd3-drag'
 declare module 'd3-request'
 declare module 'd3-scale-chromatic'
 
+declare module 'react-markdown'
+
 declare module 'react-dock'
