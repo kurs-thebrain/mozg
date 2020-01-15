@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 
 import Preview from './Preview'
-import Editor from './Editor'
+import MdEditor from './Editor'
 
 const EditorPreview = (props) => {
 
@@ -30,7 +30,7 @@ const EditorPreview = (props) => {
     return (
         <div>
             <Button/>
-            {isEditable && <Editor markdown={markdown} useMarkdown={setMarkdown}/>}
+            {isEditable && <MdEditor markdown={markdown} useMarkdown={setMarkdown}/>}
             {!isEditable && <Preview markdown={markdown}/>}
         </div>
     )

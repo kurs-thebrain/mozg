@@ -12,7 +12,6 @@ import EditorPreview from './EditorPreview'
 
 // РАЗДЕЛИТЬ НА НЕСКОЛЬКО ФАЙЛОВ УЖЕ НЕ СМЕШНО
 
-import ButtonAppBar from "./NavPanel";
 // связи между "братьями" сделать пунктирными
 
 export default class D3Graph extends Component<any,any> {
@@ -281,7 +280,6 @@ export default class D3Graph extends Component<any,any> {
     render() {
         return (
             <div>
-                <ButtonAppBar/>
                 <SwipeableDrawer
                     onClose={(d:any) => {this.setState({isVisible:false})}}
                     onOpen={(d:any) => {this.setState({isVisible:true})}}
