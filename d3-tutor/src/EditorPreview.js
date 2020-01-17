@@ -10,7 +10,7 @@ const EditorPreview = (props) => {
             return props.markdown
         return '# Erorr'
     })
-    const [isEditable, setIsEditable] = useState(true)
+    const [isEditable, setIsEditable] = useState(false)
 
     const Button = () => {
         const render = isEditable ? 

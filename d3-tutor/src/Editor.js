@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import classNames from 'classnames'
 import {Editor, EditorState,RichUtils} from 'md-draft-js'
 import LinkIcon from '@material-ui/icons/Link'
@@ -47,7 +47,9 @@ const MdEditor = (props) => {
         editorState: EditorState.createWithContent(props.markdown)
     })
 
-    var onChange = (editorState) => setState({ editorState })
+    
+
+    var onChange = (editorState) => {setState({editorState}); props.useMarkdown(state.editorState.text)}
 
     var handleKeyCommand = ({ key }) => {
         const newState = RichUtils.applyCommand(state.editorState, key)
