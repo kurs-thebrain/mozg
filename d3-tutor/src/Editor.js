@@ -47,9 +47,9 @@ const MdEditor = (props) => {
         editorState: EditorState.createWithContent(props.markdown)
     })
 
-    
+    useEffect(() => props.setMarkdown(state.editorState.text))
 
-    var onChange = (editorState) => {setState({editorState}); props.useMarkdown(state.editorState.text)}
+    var onChange = (editorState) => setState({editorState})
 
     var handleKeyCommand = ({ key }) => {
         const newState = RichUtils.applyCommand(state.editorState, key)

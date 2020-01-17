@@ -1,5 +1,7 @@
 import React, {useState, useEffect} from 'react'
 
+import Note from './Note'
+
 import Preview from './Preview'
 import MdEditor from './Editor'
 
@@ -27,13 +29,16 @@ const EditorPreview = (props) => {
     }
 
     console.log('render')
-    return (
+    /*return (
         <div>
-            <Button/>
-            {isEditable && <MdEditor markdown={markdown} useMarkdown={setMarkdown}/>}
+            <div className = "editor-buttons">
+                <Button/>
+            </div>
+            {isEditable && <MdEditor markdown={markdown} setMarkdown={setMarkdown}/>}
             {!isEditable && <Preview markdown={markdown}/>}
         </div>
-    )
+    )*/
+    return <Note markdown={markdown} setMarkdown={setMarkdown}/>
 }
 
 export default EditorPreview
