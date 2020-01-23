@@ -4,12 +4,18 @@ import D3Graph from "./D3Graph"
 import data from './data.json'
 import {GraphPropsType} from "./types"
 import ButtonAppBar from "./NavPanel"
-import ApolloClient from 'apollo-boost';
-import {ApolloProvider} from 'react-apollo';
 
-const client = new ApolloClient({
-    uri: `http://localhost:3005/graphql`,
-});
+//Пример использования---------------------------
+import * as schema from './schema';
+function CreateNode(label:String,content:String){
+    let newNode = schema.CreateNode(label,content);
+    return newNode;
+}
+
+let node = CreateNode('label','content');
+let node2 = CreateNode('label2','content2');
+//--------------------------------------------
+
 
 export default class App extends Component<any, GraphPropsType> {
     state = {
@@ -20,12 +26,7 @@ export default class App extends Component<any, GraphPropsType> {
 
     render() {
         return (
-            <ApolloProvider client = {client}>
-                <div className="App">
-                    <ButtonAppBar/>
-                    <D3Graph/>
-                </div>
-            </ApolloProvider>
+            
         )
     }
 }
