@@ -77,7 +77,7 @@ export default class D3Graph extends Component<any,any> {
     }
 
     mouseup = () => {
-        if (this.state.mouseup_node == this.state.mousedownNode)
+        if (this.state.mouseup_node == this.state.mousedownNode || !this.state.mousedownNode)
         {
             this.resetDragLine();
             return;
@@ -89,7 +89,7 @@ export default class D3Graph extends Component<any,any> {
         }
         else if (this.state.mousedownNode)
         {
-            this.addNode('kekw', mouse(this.svg.node())[0], mouse(this.svg.node())[1])
+            this.addNode('example', mouse(this.svg.node())[0], mouse(this.svg.node())[1])
             newLink = {source: this.state.mousedownNode, target: this.length}
         }
 
@@ -109,7 +109,7 @@ export default class D3Graph extends Component<any,any> {
 
     initializeGraph() {
         this.graph = forceSimulation(this.state.graph.nodes)
-            .force('link', forceLink(this.state.graph.links).id((d:any) => d.id).distance(75))
+            .force('link', forceLink(this.state.graph.links).id((d:any) => d.id).distance(150))
             .force('charge', forceManyBody().strength(-200))
             .force('center', forceCenter(this.state.width/2, this.state.height/2))
             .on('tick', this.ticked)
@@ -140,13 +140,15 @@ export default class D3Graph extends Component<any,any> {
             .data(this.state.graph.nodes)
             .enter()
             .append('g')
+            .attr('id', (d:any) => `id${d.id}`)
 
         this.node
             .append('circle')
             .attr('class', 'node')
-            .attr('r', 15)
+            .attr('r', (d:any) => {
+                return Math.pow(d.label.length, 0.5) * 10;
+            })
             .attr('fill', (d:any) => this.colorScale(d))
-            .attr('id', (d:any) => `id${d.id}`)
             .on('mousedown', (d:any) => {
                 this.setState({currentNode: d, mousedownNode: d})
             })
@@ -160,10 +162,15 @@ export default class D3Graph extends Component<any,any> {
 
         this.node
             .append('text')
-            .attr('class', 'label')
             .text((d:any) => {return d.label})
-            .attr('x', 20)
-            .attr('y', 3)
+            .attr('class', 'label')
+            .attr('dy', '.20em')
+            .style('text-anchor', 'middle')
+            .style('font-size', (d:any) => {
+                let r = Math.pow(d.label.length, 0.5) * 10;
+                return (3.3 * r / d.label.length)
+            })
+            .style("fill", "white")
 
         this.svg = selectAll('svg')
             .on("mousemove", this.mousemove)
@@ -218,8 +225,7 @@ export default class D3Graph extends Component<any,any> {
         let newData = {
             id: `${++this.length}`,
             label: content,
-            x: x, y: y,
-            content: content
+            x: x, y: y
         }
 
         let newGraph = {
@@ -230,6 +236,7 @@ export default class D3Graph extends Component<any,any> {
         let newNode = this.container
             .select('.nodes')
             .append('g')
+            .attr('id', `id${this.length}`)
 
         newNode
             .selectAll('g')
@@ -237,27 +244,32 @@ export default class D3Graph extends Component<any,any> {
             .enter()
             .append('circle')
             .attr('class', 'node')
-            .attr('r', 15)
+            .attr('r', (d:any) => {
+                return Math.pow(d.label.length, 0.5) * 10;
+            })
             .attr('fill', (d:any) => this.colorScale(d))
-            .attr('id', `id${this.length}`)
             .on('mousedown', (d:any) => {
                 this.setState({currentNode: d, mousedownNode: d})
             })
             .on('mouseup', (d:any)=>
             {
-                this.setState({mouseup_node: d})
-
+                this.setState({currentNode: d, mouseup_node: d})
             })
             .on('click', (d:any) => {
-                this.setState({isVisible: true})
+                this.setState({currentNode: d, isVisible: true})
             })
 
         newNode
             .append('text')
-            .attr('class', 'label')
             .text(content)
-            .attr('x', 20)
-            .attr('y', 3)
+            .attr('class', 'label')
+            .attr('dy', '.20em')
+            .style('text-anchor', 'middle')
+            .style('font-size', (d:any) => {
+                let r = Math.pow(content.length, 0.5) * 10;
+                return (3 * r / content.length)
+            })
+            .style("fill", "white")
 
         this.setState({graph: newGraph}, this.updateGraph)
     }
@@ -275,6 +287,7 @@ export default class D3Graph extends Component<any,any> {
             }
             return false;
         }).remove()
+
         this.container.select('.nodes').select(`#id${this.state.currentNode.id}`).remove()
 
         let newGraph = {
