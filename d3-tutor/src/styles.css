@@ -28,6 +28,18 @@ text {
     right: 0;
 }
 
+.note-hat-label {
+    resize: none;
+    height: 35px;
+    width: 80%;
+    outline: none;
+    -moz-appearance: none;
+    border: 1px solid white;
+    font-family: "Roboto";
+    font-size: 30px;
+    border-radius: 4px;
+}
+
 .note-hat {
     height: 40px;
     width: 96.1%;
@@ -59,6 +71,8 @@ text {
     margin-left: 7%;
     marign-right: 7%;
     min-height: 40px;
+    border: 1px solid #797979;
+    border-radius: 4px;
     max-height: 600px;
 }
 
