@@ -1,10 +1,13 @@
-import React, { Component, useState } from 'react'
+import React, {Component, useEffect, useState} from 'react'
 import ReactDOM from 'react-dom'
 import ReactMarkdown from 'react-markdown'
 
 import IconButton from "@material-ui/core/IconButton"
-import CreateIcon from '@material-ui/icons/Create';
+import CreateIcon from '@material-ui/icons/Create'
 import DeleteIcon from '@material-ui/icons/Delete'
+import SaveIcon from '@material-ui/icons/Save'
+import TextareaAutosize from 'react-textarea-autosize'
+
 
 class TextAr extends Component {
     constructor (props) {
@@ -29,10 +32,11 @@ class TextAr extends Component {
 
     render() {
         return (
-            <textarea
+            <TextareaAutosize
                 className="note-textarea"
                 value={this.props.value}
                 onChange={(e) => this.props.setMarkdown(e.target.value)}
+                placeholder="Описание...."
             />
         )
     }
@@ -51,6 +55,10 @@ const Note = (props) => {
         return false
     })
 
+    useEffect(() => {
+        props.setMarkdown(markdown)
+    })
+
     const Text = isEditable ?
         <div onClick={() => setIsEditable(false)}>
             <ReactMarkdown className="note-markdown">
@@ -63,15 +71,19 @@ const Note = (props) => {
             setHide={() => setIsEditable(true)}
         />
 
+    const iconDelSave = isEditable ?
+        <CreateIcon style={{color:"white"}}/>:
+        <SaveIcon style={{color:"white"}}/>
+
     return (
         <div>
             <div className="note-hat">
                 <a style={{color:"white"}}>{props.label}</a>
                 <span className="note-hat-button">
-                    <IconButton onClick={() => setIsEditable(false)}>
-                        <CreateIcon style={{color:"white"}}/>
+                    <IconButton onClick={() => setIsEditable(!isEditable)}>
+                        {iconDelSave}
                     </IconButton>
-                    <IconButton>
+                    <IconButton onClick={props.deleteNode}>
                         <DeleteIcon style={{color:"white"}}/>
                     </IconButton>
                 </span>

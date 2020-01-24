@@ -5,6 +5,7 @@ import data from './data.json'
 import {GraphPropsType} from "./types"
 import ButtonAppBar from "./NavPanel"
 
+
 //Пример использования---------------------------
 import * as schema from './schema';
 function CreateNode(label:String,content:String){

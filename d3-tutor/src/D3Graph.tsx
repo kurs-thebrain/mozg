@@ -288,6 +288,10 @@ export default class D3Graph extends Component<any,any> {
                     <Note
                         label = {this.state.currentNode.label}
                         markdown = {this.state.currentNode.content}
+                        ///////////////////////////////////////////////////////////////////////////////////////////
+                        setMarkdown = { (text:string) => {console.log(text)} } // !!!!! вот здесь изменение content
+                        ///////////////////////////////////////////////////////////////////////////////////////////
+                        deleteNode = {() => {this.setState({isVisible: false}); this.deleteNode()}}
                     />
                 </SwipeableDrawer>
                 <svg

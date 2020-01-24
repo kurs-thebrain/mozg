@@ -57,6 +57,8 @@ text {
     margin-top: 5%;
     margin-left: 7%;
     marign-right: 7%;
+    min-height: 40px;
+    max-height: 600px;
 }
 
 .MuiPaper-root {
