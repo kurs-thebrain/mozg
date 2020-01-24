@@ -6,10 +6,9 @@ import {scaleOrdinal} from "d3-scale";
 import {schemeCategory10} from "d3-scale-chromatic"
  
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer'
-//import MarkdownEditor from './md_editor'
- 
-import EditorPreview from './EditorPreview'
- 
+
+import Note from './Note'
+
 // РАЗДЕЛИТЬ НА НЕСКОЛЬКО ФАЙЛОВ УЖЕ НЕ СМЕШНО
  
 // связи между "братьями" сделать пунктирными
@@ -311,10 +310,22 @@ export default class D3Graph extends Component<any,any> {
                     onOpen={(d:any) => {this.setState({isVisible:true})}}
                     open={this.state.isVisible}
                     max-width='500'
-                    >
-                    <EditorPreview markdown = {this.state.currentNode.content}/>
+                >
+                    <Note
+                        label = {this.state.currentNode.label}
+                        markdown = {this.state.currentNode.content}
+                        ///////////////////////////////////////////////////////////////////////////////////////////
+                        setMarkdown = { (text:string) => {console.log(text)} } // !!!!! вот здесь изменение content
+                        ///////////////////////////////////////////////////////////////////////////////////////////
+                        deleteNode = {() => {this.setState({isVisible: false}); this.deleteNode()}}
+                    />
                 </SwipeableDrawer>
-                <svg width={this.state.width} height={this.state.height} style={{border:'solid 1px #eee', borderBottom:'solid 1ox #ccc'}}>
+                <svg
+                    width={this.state.width}
+                    height={this.state.height}
+                    style={{border:'solid 1px #eee',
+                        borderBottom:'solid 1ox #ccc'}}
+                >
                     <g className='graph'/>
                 </svg>
             </div> )
