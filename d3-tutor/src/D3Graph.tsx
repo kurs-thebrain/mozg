@@ -4,14 +4,14 @@ import {forceCenter, forceLink, forceManyBody, forceSimulation, forceLayout} fro
 import data from './data.json'
 import {scaleOrdinal} from "d3-scale";
 import {schemeCategory10} from "d3-scale-chromatic"
-
+ 
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer'
 //import MarkdownEditor from './md_editor'
-
+ 
 import EditorPreview from './EditorPreview'
-
+ 
 // РАЗДЕЛИТЬ НА НЕСКОЛЬКО ФАЙЛОВ УЖЕ НЕ СМЕШНО
-
+ 
 // связи между "братьями" сделать пунктирными
 
 export default class D3Graph extends Component<any,any> {
@@ -47,6 +47,18 @@ export default class D3Graph extends Component<any,any> {
     drag_line = selectAll;
     colorScale = scaleOrdinal(schemeCategory10);
 
+    resetDragLine() {
+        if (this.state.dragged) {
+            this.setState({dragged: false, mousedownNode: null, mouseup_node: null})
+            this.drag_line
+                .attr("class", "hidden_line")
+                .attr("x1", 0)
+                .attr("y1", 0)
+                .attr("x2", 0)
+                .attr("y2", 0)
+        }
+    }
+
     mousedown = () => {
         this.setState({dragged: true})
         if (this.state.mousedownNode && this.state.dragged)
@@ -68,15 +80,7 @@ export default class D3Graph extends Component<any,any> {
     mouseup = () => {
         if (this.state.mouseup_node == this.state.mousedownNode)
         {
-            if (this.state.dragged) {
-                this.setState({dragged: false, mousedownNode: null, mouseup_node: null})
-                this.drag_line
-                    .attr("class", "hidden_line")
-                    .attr("x1", 0)
-                    .attr("y1", 0)
-                    .attr("x2", 0)
-                    .attr("y2", 0)
-            }
+            this.resetDragLine();
             return;
         }
         let newLink;
@@ -91,7 +95,7 @@ export default class D3Graph extends Component<any,any> {
         }
 
         this.container
-            .selectAll('.links')
+            .select('.links')
             .append('path')
             .attr('class', 'link')
 
@@ -101,16 +105,7 @@ export default class D3Graph extends Component<any,any> {
                 newLink]}
 
         this.setState({graph: newGraph}, this.updateGraph);
-
-        if (this.state.dragged) {
-            this.setState({dragged: false, mousedownNode: null, mouseup_node: null})
-            this.drag_line
-                .attr("class", "hidden_line")
-                .attr("x1", 0)
-                .attr("y1", 0)
-                .attr("x2", 0)
-                .attr("y2", 0)
-        }
+        this.resetDragLine();
     }
 
     initializeGraph() {
@@ -141,10 +136,13 @@ export default class D3Graph extends Component<any,any> {
 
         this.node = this.container
             .append('g')
-            .attr('class', 'nodes') // узлы
+            .attr('class', 'nodes')
             .selectAll('circle')
             .data(this.state.graph.nodes)
             .enter()
+            .append('g')
+
+        this.node
             .append('circle')
             .attr('class', 'node')
             .attr('r', 15)
@@ -152,7 +150,6 @@ export default class D3Graph extends Component<any,any> {
             .attr('id', (d:any) => `id${d.id}`)
             .on('mousedown', (d:any) => {
                 this.setState({currentNode: d, mousedownNode: d})
-                this.setState({markdown: d.content})
             })
             .on('mouseup', (d:any)=>
             {
@@ -161,6 +158,13 @@ export default class D3Graph extends Component<any,any> {
             .on('click', (d:any) => {
                 this.setState({currentNode: d, isVisible: true})
             })
+
+        this.node
+            .append('text')
+            .attr('class', 'label')
+            .text((d:any) => {return d.label})
+            .attr('x', 20)
+            .attr('y', 3)
 
         this.svg = selectAll('svg')
             .on("mousemove", this.mousemove)
@@ -194,8 +198,15 @@ export default class D3Graph extends Component<any,any> {
     }
 
     updateGraph() {
-        this.node = this.container.selectAll('.nodes').selectAll('.node').data(this.state.graph.nodes)
-        this.link = this.container.selectAll('.links').selectAll('.link').data(this.state.graph.links)
+        this.node = this.container
+            .select('.nodes')
+            .selectAll('g')
+            .data(this.state.graph.nodes)
+
+        this.link = this.container
+            .selectAll('.links')
+            .selectAll('.link')
+            .data(this.state.graph.links)
 
         this.graph.nodes(this.state.graph.nodes)
         this.graph.force('link').links(this.state.graph.links)
@@ -205,18 +216,26 @@ export default class D3Graph extends Component<any,any> {
     }
 
     addNode = (content:string, x:number, y:number) => {
+        let newData = {
+            id: `${++this.length}`,
+            label: content,
+            x: x, y: y,
+            content: content
+        }
+
         let newGraph = {
-            'nodes': [...this.state.graph.nodes,
-                {   id: ++this.length,
-                    contentType: 'markdown',
-                    content: content,
-                    x: x, y: y
-                }],
+            'nodes': [...this.state.graph.nodes, newData],
             'links': this.state.graph.links
         }
 
-        this.container
-            .selectAll('.nodes')
+        let newNode = this.container
+            .select('.nodes')
+            .append('g')
+
+        newNode
+            .selectAll('g')
+            .data([newData])
+            .enter()
             .append('circle')
             .attr('class', 'node')
             .attr('r', 15)
@@ -227,22 +246,29 @@ export default class D3Graph extends Component<any,any> {
             })
             .on('mouseup', (d:any)=>
             {
-                this.setState({currentNode: d, mouseup_node: d})
+                this.setState({mouseup_node: d})
+
             })
             .on('click', (d:any) => {
-                this.setState({currentNode: d, isVisible: true})
+                this.setState({isVisible: true})
             })
+
+        newNode
+            .append('text')
+            .attr('class', 'label')
+            .text(content)
+            .attr('x', 20)
+            .attr('y', 3)
 
         this.setState({graph: newGraph}, this.updateGraph)
     }
 
-    deleteNode()
-    {
+    deleteNode() {
         let newNodes = this.state.graph.nodes
         newNodes.splice(this.state.graph.nodes.indexOf(this.state.currentNode), 1)
 
         let newLinks = this.state.graph.links
-        this.container.selectAll('.links').selectAll('.link').filter((d:any) => {
+        this.container.select('.links').selectAll('.link').filter((d:any) => {
             if (d.target.id == this.state.currentNode.id || d.source.id == this.state.currentNode.id)
             {
                 newLinks.splice(newLinks.indexOf(d), 1)
@@ -250,7 +276,7 @@ export default class D3Graph extends Component<any,any> {
             }
             return false;
         }).remove()
-        this.container.selectAll('.nodes').select(`#id${this.state.currentNode.id}`).remove()
+        this.container.select('.nodes').select(`#id${this.state.currentNode.id}`).remove()
 
         let newGraph = {
             'nodes': newNodes,
@@ -292,6 +318,6 @@ export default class D3Graph extends Component<any,any> {
                     <g className='graph'/>
                 </svg>
             </div> )
-
+ 
     }
 }
