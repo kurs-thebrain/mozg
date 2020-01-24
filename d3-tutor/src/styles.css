@@ -22,15 +22,41 @@ text {
     stroke-width: 5px;
 }
 
+.note-hat-button {
+    position: absolute;
+    top: 7px;
+    right: 0;
+}
+
 .note-hat {
-    height: 25%;
-    width: 90%;
-    padding: 5%;
+    height: 40px;
+    width: 96.1%;
+    padding: 12px;
+    font-family: "Roboto";
+    font-size: 30px;
+    background-color: #3f51b5;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+.note-body {
+    width: 100%;
+    height: 100%;
+}
+
+.note-markdown {
+    padding-left: 7%;
+    padding-right: 7%;
+    font-family: "Roboto";
+    word-wrap: break-word;
 }
 
 .note-textarea {
     outline: none;
     resize: none;
+    width: 86%;
+    margin-top: 5%;
+    margin-left: 7%;
+    marign-right: 7%;
 }
 
 .MuiPaper-root {

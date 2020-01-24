@@ -7,9 +7,6 @@ import {schemeCategory10} from "d3-scale-chromatic"
 
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer'
 
-import Fab from '@material-ui/core/Fab'
-import DeleteIcon from '@material-ui/icons/Delete'
-
 import Note from './Note'
 
 // РАЗДЕЛИТЬ НА НЕСКОЛЬКО ФАЙЛОВ УЖЕ НЕ СМЕШНО
@@ -292,9 +289,6 @@ export default class D3Graph extends Component<any,any> {
                         label = {this.state.currentNode.label}
                         markdown = {this.state.currentNode.content}
                     />
-                    <Fab color="primary" aria-label="add">
-                        <DeleteIcon />
-                    </Fab>
                 </SwipeableDrawer>
                 <svg
                     width={this.state.width}

@@ -26,7 +26,10 @@ export default class App extends Component<any, GraphPropsType> {
 
     render() {
         return (
-            
+            <div className="App">
+                <ButtonAppBar/>
+                <D3Graph/>
+            </div>
         )
     }
 }
