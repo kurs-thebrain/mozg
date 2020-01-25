@@ -33,14 +33,13 @@ class TextAr extends Component {
     render() {
         return (
             <TextareaAutosize
-                className="note-textarea"
+                className={this.props.className}
                 value={this.props.value}
-                onChange={(e) => this.props.setMarkdown(e.target.value)}
-                placeholder="Описание...."
+                onChange={(e) => this.props.setValue(e.target.value)}
+                placeholder={this.props.placeholder}
             />
         )
     }
-
 }
 
 const Note = (props) => {
@@ -49,8 +48,15 @@ const Note = (props) => {
             return props.markdown
         return '# Erorr'
     })
+
     const [isEditable, setIsEditable] = useState(() => {
         if (props.markdown)
+            return true
+        return false
+    })
+
+    const [isEditableLabel, setIsEditableLabel] = useState(() => {
+        if (props.label)
             return true
         return false
     })
@@ -66,19 +72,36 @@ const Note = (props) => {
             </ReactMarkdown>
         </div>:
         <TextAr
+            className="note-textarea"
             value={markdown}
-            setMarkdown={setMarkdown}
+            setValue={setMarkdown}
             setHide={() => setIsEditable(true)}
+            placeholder="Описание...."
         />
 
     const iconDelSave = isEditable ?
         <CreateIcon style={{color:"white"}}/>:
         <SaveIcon style={{color:"white"}}/>
 
+    const changeLabel = isEditableLabel ?
+        <a
+            onClick={() => setIsEditableLabel(false)}
+            style={{color:"white"}}
+        >
+            {props.label}
+        </a>:
+        <TextAr
+            className="note-hat-label"
+            value={props.label}
+            setValue={props.setLabel}
+            setHide={() => setIsEditableLabel(true)}
+            placeholder="Мысль..."
+        />
+
     return (
         <div>
             <div className="note-hat">
-                <a style={{color:"white"}}>{props.label}</a>
+                { changeLabel }
                 <span className="note-hat-button">
                     <IconButton onClick={() => setIsEditable(!isEditable)}>
                         {iconDelSave}
